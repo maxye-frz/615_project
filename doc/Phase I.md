@@ -12,7 +12,14 @@ data source: [Inside Airbnb](http://insideairbnb.com/get-the-data.html)
 
 (3) List of questions
 	
-
+	Show the listings start hosting in 2008 with review score over 95.
+	Show the name, host_acceptance_time and host_response_rate of the hosts who have more than 3 listings currently.
+	Show the listings by hosts who is related to UCSF in their host_about.
+	Show host_response_time and host_response_rate of those who have different host_location and listing location.
+	Show listings that offers entire home/apartment with more than 3 accommodations and coffee maker in neighborhood Financial District.
+	Show the average price of listings in Financial District.
+	Show the average rating of listings with price less than $100, between $100 and $200, between $200 and $300 and above $300.
+	Show listings from hosts who were originally not from San Francisco. (from host_about)
 
 (4) Relational data model
 

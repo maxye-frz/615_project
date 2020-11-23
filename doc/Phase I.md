@@ -47,13 +47,22 @@ data source: [Inside Airbnb](http://insideairbnb.com/get-the-data.html)
 	fields terminated by ',' optionally enclosed by '"'   
 	(id, name, description...);
 
+	date data type;
+	% to INT/DECIMAL;
+	composite attribute store to table;
+
 (7) Result of project
 
-	like hw3
+	like hw3//
 
 (8) Topics of database design
 
 
 Questions for prof on Monday:
 
-(7)
+host_location, neighborhood, Neighborhood: ?
+(4)? relational data model in what format? ER diagram?
+Seperate review score table from Listing?
+what to do for (7), (8)? Cant be like a real airbnb right?
+final results from previous students?
+presentation? report? a link?

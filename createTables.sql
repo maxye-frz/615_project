@@ -107,7 +107,7 @@ CREATE TABLE Neighbourhood(
 	state VARCHAR(20) NOT NULL,
 	country VARCHAR(20) NOT NULL,
 	PRIMARY KEy (id)
-)
+);
 
 DROP TABLE Review;
 CREATE TABLE Review(
@@ -119,11 +119,11 @@ CREATE TABLE Review(
 	PRIMARY KEY (id),
 	FOREIGN KEY (listing_id) REFERENCES Listing.id,
 	FOREIGN KEY (reviewer_id) REFERENCES Reviewer.reviewer_id
-)
+);
 
 DROP TABLE Reviewer;
 CREATE TABLE Reviewer(
 	reviewer_id INT NOT NULL,
 	reviewer_name VARCHAR(20) NOT NULL,
 	PRIMARY KEY (reviewer_id)
-)
+);

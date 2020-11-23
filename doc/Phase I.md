@@ -129,6 +129,78 @@ data source: [Inside Airbnb](http://insideairbnb.com/get-the-data.html)
 
 (5) SQL statements for representative sample of target queries
 
+	/* Show the name, host_acceptance_time and host_response_rate of the hosts who have more than 3 listings currently. */
+	SELECT host_name, host_acceptance_time, host_response_rate
+	FROM Hosts AS H 
+	WHERE EXISTS (
+	    SELECT * 
+	    FROM listings AS L1, Listings AS L2, Listings AS L3
+	    WHERE L1.host_id = L2.host_id AND
+		L2.host_id = L3.host_id AND
+		H.host_id = L1.host_id AND
+		L1.id <> L2.id AND
+		L2.id <> L3.id AND
+		L1.id <> L3.id);
+
+
+	/* Show host_response_time and host_response_rate of those who have different host_location and listing location. */ 
+	SELECT host_response_time, host_response_rate
+	FROM Hosts AS H, Neighborhood N1, Listings as L, Neighborhood N2
+	WHERE H.id = L.host_id AND
+	    N1.id = H.neighborhood_id AND
+	    N2.id = L.neighborhood_id AND
+	    N1.id <> N2.id;
+
+
+	/* Show the average rental price of each neighborhood in San Francisco. */
+	SELECT N.name, AVG(price)
+	FROM Listings AS L
+	JOIN Neighborhood AS N ON L.neighborhood_id = N.id
+	WHERE N.city = 'San Francisco'
+	GROUP BY N.id;
+
+
+	/* Show the percentage of reviewers have reviewed over 10 listings in Airbnb. */
+	SELECT COUNT(distinct reviewer_id) / r2_ids
+	FROM Reviews, (SELECT COUNT(distinct reviewer_id) AS r2_ids
+			FROM Reviews
+			GROUP BY reviewer_id 
+			HAVING COUNT(listing_id) > 10) AS R2;
+
+
+	/* Show the listings that are instant bookable, have over 50 reviews, rated above 90 and have over 30 days available in a year. */
+	SELECT distinct id
+	FROM Listings
+	JOIN Reviews ON Listings.id = Reviews.listing_id
+	WHERE instant_bookable = 't' AND 
+	    review_scores_rating > 90 AND
+	    availability_365 > 30 
+	HAVING COUNT(Reviews.id) > 50;
+
+
+	/* Show the name of reviewers who reviewed most each year. */
+	SELECT reviewer_name
+	FROM Reviews 
+	GROUP BY reviewer_id
+	HAVING COUNT(id) = (SELECT COUNT(id)
+				FROM Reviews 
+				GROUP BY reviewer_id);
+
+	/* Show the listings that have good views (name including view) that are rated highest in each neighborhood. */
+	SELECT id, name
+	FROM Listings 
+	WHERE name LIKE %View% OR 
+	    name LIKE %view% AND
+	GROUP BY neighborhood_id
+	ORDER BY review_scores_rating DESC
+	LIMIT 1;
+
+
+	/* Show the review rating score stats(average, max, min) or listings group by property type, order by average review rating score. */
+	SELECT property_type, AVG(review_scores_rating), MAX(review_scores_rating), MIN(review_scores_rating)
+	FROM Listings
+	GROUP BY property_type, 
+	ORDER BY AVG(review_scores_rating)
 
 
 (6) How to load the database with values
@@ -148,12 +220,3 @@ data source: [Inside Airbnb](http://insideairbnb.com/get-the-data.html)
 (8) Topics of database design
 	
 	Some potential topics include data mining, complex data extraction issues from online sources and some fields in natural language interfaces. We will conduct some data mining practice on our dataset to generate useful analysis for users. One example of using natural language related knowledge in data mining is to categorize/sort review comments by their sentiment scores, which is evaluated based on how postive/negative some adjetive words used in the comments. This would be provide an additional way to reflect how positive a user evalute its experience other than old-fashioned numeric rating mechanism.
-
-Questions for prof on Monday:
-
-host_location, neighborhood, Neighborhood: ?
-(4)? relational data model in what format? ER diagram?
-Seperate review score table from Listing?
-what to do for (7), (8)? Cant be like a real airbnb right?
-final results from previous students?
-presentation? report? a link?

@@ -16,7 +16,7 @@ Nanxi Ye and Linghao Jin
 
 (2) Target domain
 
-Airbnb listing information in San Francisco, CA
+Airbnb listing information in San Francisco, CA combined with SF neighborhood data including covid cases, demographic, income level etc.
 
 (3) List of questions
 	

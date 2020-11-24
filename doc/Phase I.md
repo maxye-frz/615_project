@@ -1,6 +1,14 @@
 Final Project Phase I
 
-data source: [Inside Airbnb](http://insideairbnb.com/get-the-data.html)
+data source: 
+
+[Inside Airbnb](http://insideairbnb.com/get-the-data.html)
+
+[covid total cases in SF by neighborhood](https://data.sfgov.org/stories/s/Map-of-Cumulative-Cases/adm5-wq8i#cumulative-cases-map)
+
+[covid cases in last 30 days in SF by neighborhood](https://data.sfgov.org/stories/s/Map-of-Cumulative-Cases/adm5-wq8i#new-cases-map)
+
+[sentiment analysis](https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html)
 
 (1) Who are your team members
 
@@ -105,6 +113,7 @@ Airbnb listing information in San Francisco, CA
 		city VARCHAR(20) NOT NULL,
 		state VARCHAR(20) NOT NULL,
 		country VARCHAR(20) NOT NULL,
+		covid_case INT
 		PRIMARY KEy (id)
 	);
 
@@ -115,6 +124,7 @@ Airbnb listing information in San Francisco, CA
 		date DATE NOT NULL,
 		reviewer_id INT NOT NULL,
 		comments VARCHAR(2000),
+		sentiment_score INT,
 		PRIMARY KEY (id),
 		FOREIGN KEY (listing_id) REFERENCES Listing.id,
 		FOREIGN KEY (reviewer_id) REFERENCES Reviewer.reviewer_id
@@ -213,7 +223,7 @@ We plan to use sql to bulk load the data from csv files to sql. There will be is
 	
 (7) Result of project
 
-We plan to deploy a web application that has a search feature, which would be useful for users to search for specific listings they look for on Airbnb. The specific implementation is still under discussion. At this stage we have some prelimiary thoughts on such search website. In addition to traditional search on Airbnb listing (location, date, avaliability), we want the search engine to allow user to search for additional information in specific neighborhoods, such as listing density, demongraphic, living cost, income levels etc. The users could also do a "vague" search. For example, a user can search for "sunset view" which would not be included as part of amentities in the database, but could be mentioned in listing description or reviewers comments. We want the search results beyond the scope of simple queries so that they provide further understanding of the data.
+We plan to deploy a web application that has a search feature, which would be useful for users to search for specific listings they look for on Airbnb. The specific implementation is still under discussion. At this stage we have some prelimiary thoughts on such search website. In addition to traditional search on Airbnb listing (location, date, avaliability), we want the search engine to allow user to search for additional information in specific neighborhoods, such as covid cases(total/last 30 days), listing density, demongraphic, living cost, income levels etc. The users could also do a "vague" search. For example, a user can search for "sunset view" which would not be included as part of amentities in the database, but could be mentioned in listing description or reviewers comments. We want the search results beyond the scope of simple queries so that they provide further understanding of the data.
 
 (8) Topics of database design
 	

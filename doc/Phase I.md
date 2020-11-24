@@ -4,11 +4,11 @@ data source: [Inside Airbnb](http://insideairbnb.com/get-the-data.html)
 
 (1) Who are your team members
 
-	Nanxi Ye and Linghao Jin
+Nanxi Ye and Linghao Jin
 
 (2) Target domain
 
-	Airbnb listing information in San Francisco, CA
+Airbnb listing information in San Francisco, CA
 
 (3) List of questions
 	
@@ -205,18 +205,16 @@ data source: [Inside Airbnb](http://insideairbnb.com/get-the-data.html)
 
 (6) How to load the database with values
 
+We plan to use scripts written in python to bulk load the data from csv files to sql. There will be issues related to datatype conversion (such as format of date, 95% to 95), duplicate tuples, NULL values and data parsing problems ("" or /). An example of how we use python to load data is:
+
 	load data local infile 'listings2.csv' into  table listings  
 	fields terminated by ',' optionally enclosed by '"'   
 	(id, name, description...);
 
-	date data type;
-	% to INT/DECIMAL;
-	composite attribute store to table;
-
 (7) Result of project
 
-	We plan to deploy a web application that has a search feature, which would be useful for users to search for specific listings they look for on Airbnb. The specific implementation is still under discussion. At this stage we have some prelimiary thoughts on such search website. In addition to traditional search on Airbnb listing (location, date, avaliability), we want the search engine to allow user to search for additional information in specific neighborhoods, such as listing density, demongraphic, living cost, income levels etc. The users could also do a "vague" search. For example, a user can search for "sunset view" which would not be included as part of amentities in the database, but could be mentioned in listing description or reviewers comments. We want the search results beyond the scope of simple queries so that they provide further understanding of the data.
+We plan to deploy a web application that has a search feature, which would be useful for users to search for specific listings they look for on Airbnb. The specific implementation is still under discussion. At this stage we have some prelimiary thoughts on such search website. In addition to traditional search on Airbnb listing (location, date, avaliability), we want the search engine to allow user to search for additional information in specific neighborhoods, such as listing density, demongraphic, living cost, income levels etc. The users could also do a "vague" search. For example, a user can search for "sunset view" which would not be included as part of amentities in the database, but could be mentioned in listing description or reviewers comments. We want the search results beyond the scope of simple queries so that they provide further understanding of the data.
 
 (8) Topics of database design
 	
-	Some potential topics include data mining, complex data extraction issues from online sources and some fields in natural language interfaces. We will conduct some data mining practice on our dataset to generate useful analysis for users. One example of using natural language related knowledge in data mining is to categorize/sort review comments by their sentiment scores, which is evaluated based on how postive/negative some adjetive words used in the comments. This would be provide an additional way to reflect how positive a user evalute its experience other than old-fashioned numeric rating mechanism.
+Some potential topics include data mining, complex data extraction issues from online sources and some fields in natural language interfaces. We will conduct some data mining practice on our dataset to generate useful analysis for users. One example of using natural language related knowledge in data mining is to categorize/sort review comments by their sentiment scores, which is evaluated based on how postive/negative some adjetive words used in the comments. This would be provide an additional way to reflect how positive a user evalute its experience other than old-fashioned numeric rating mechanism.

@@ -217,9 +217,85 @@ Airbnb listing information in San Francisco, CA combined with SF neighborhood da
 
 We plan to use sql to bulk load the data from csv files to sql. There will be issues related to datatype conversion (such as format of date, 95% to 95), duplicate tuples, NULL values and data parsing problems ("", escape /,  line break in quoted text). An example of how we load data is:
 
-	load data local infile 'listings2.csv' into  table listings  
-	fields terminated by ',' optionally enclosed by '"'   
-	(id, name, description...);
+	LOAD DATA INFILE 'data/neighbourhoods.csv' 
+	INTO TABLE Neighbourhood
+	FIELDS TERMINATED BY ',' 
+	ENCLOSED BY '"'
+	LINES TERMINATED BY '\n'
+	IGNORE 1 ROWS
+	(name, city, state, country);
+
+
+	LOAD DATA INFILE 'data/hosts.csv' 
+	IGNORE
+	INTO TABLE Host 
+	FIELDS TERMINATED BY ',' 
+	ENCLOSED BY '"'
+	LINES TERMINATED BY '\n'
+	IGNORE 1 ROWS
+	(host_id, host_url, host_name, @host_since, host_location, host_about, host_response_time, 
+	    @host_response_rate, @host_acceptance_rate, host_is_superhost,  host_thumbnail_url, host_picture_url,
+	    host_neighbourhood, host_listings_count, host_total_listings_count, host_verifications, host_has_profile_pic, 
+	    host_identity_verified)
+	SET host_since = STR_TO_DATE(@host_since, '%m/%d/%Y'),
+	    host_response_rate = TRIM(TRAILING '%' FROM NULLIF(@host_response_rate, '')),
+	    host_acceptance_rate = TRIM(TRAILING '%' FROM NULLIF(@host_acceptance_rate, ''));
+
+
+	LOAD DATA INFILE 'data/listings.csv' 
+	IGNORE
+	INTO TABLE Listing 
+	FIELDS TERMINATED BY ',' 
+	ENCLOSED BY '"'
+	LINES TERMINATED BY '\n'
+	IGNORE 1 ROWS
+	(listing_id,listing_url,name,description,neighborhood_overview,picture_url,host_id,neighbourhood,neighbourhood_cleansed,
+	    latitude,longitude,property_type,room_type,accommodates,bathrooms_text,bedrooms,beds,amenities,@price,
+	    minimum_nights,maximum_nights,availability_365,number_of_reviews,@first_review,@last_review,
+	    review_scores_rating,review_scores_accuracy,review_scores_cleanliness,review_scores_checkin,review_scores_communication,
+	    review_scores_location,review_scores_value,instant_bookable,calculated_host_listings_count,
+	    calculated_host_listings_count_entire_homes,calculated_host_listings_count_private_rooms,
+	    calculated_host_listings_count_shared_rooms,reviews_per_month)
+	SET price = TRIM(LEADING '$' FROM NULLIF(@price, '')),
+	    first_review = STR_TO_DATE(@first_review, '%m/%d/%Y'),
+	    last_review = STR_TO_DATE(@last_review, '%m/%d/%Y');
+
+
+	LOAD DATA INFILE 'data/reviewers.csv' 
+	IGNORE
+	INTO TABLE Reviewer
+	FIELDS TERMINATED BY ',' 
+	ENCLOSED BY '"'
+	LINES TERMINATED BY '\n'
+	IGNORE 1 ROWS
+	(reviewer_id, reviewer_name);
+
+
+	LOAD DATA INFILE 'data/reviews.csv' 
+	IGNORE
+	INTO TABLE Review
+	FIELDS TERMINATED BY ',' 
+	ENCLOSED BY '"'
+	LINES TERMINATED BY '\r'
+	IGNORE 1 ROWS
+	(listing_id, review_id, @review_date, reviewer_id, comments)
+	SET review_date = STR_TO_DATE(@review_date, '%m/%d/%Y');
+
+
+
+	# Add neighborhood_id foreign key
+	# problem: Downtown/Civic Cente not in neighborhood table
+	ALTER TABLE Listing
+	ADD neighbour_id INT;
+
+	ALTER TABLE Listing
+	ADD CONSTRAINT fk_neighborhood FOREIGN KEY (neighbour_id) REFERENCES Neighbourhood(neighbour_id);
+
+	UPDATE Listing
+	INNER JOIN Neighbourhood ON Listing.neighbourhood_cleansed = Neighbourhood.name
+	SET Listing.neighbour_id = Neighbourhood.neighbour_id;
+
+	DROP COLUMN neighbourhood_cleansed;
 	
 (7) Result of project
 

@@ -8,6 +8,8 @@ data source:
 
 [covid cases in last 30 days in SF by neighborhood](https://data.sfgov.org/stories/s/Map-of-Cumulative-Cases/adm5-wq8i#new-cases-map)
 
+[covid SF in one source](https://data.sfgov.org/stories/s/Map-of-Cumulative-Cases/adm5-wq8i#cumulative-cases-map)
+
 [sentiment analysis](https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html)
 
 (1) Who are your team members

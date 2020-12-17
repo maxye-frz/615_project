@@ -10,6 +10,8 @@ WHERE Zipcode >= 90000
 GROUP BY Zipcode;
 //
 
+
+
 -- show neighborhood info
 DROP PROCEDURE IF EXISTS NeighborhoodInfo;//
 CREATE PROCEDURE NeighborhoodInfo(IN neighborhood VARCHAR(30))

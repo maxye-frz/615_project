@@ -11,6 +11,13 @@ CREATE DATABASE final_project;
 USE final_project; 
 
 -- drop and create tables:
+DROP TABLE IF EXISTS Admin;
+CREATE TABLE Admin(
+    name VARCHAR(25) NOT NULL,
+    pwd VARCHAR(25) NOT NULL,
+    PRIMARY KEY (name)
+);
+
 
 DROP TABLE IF EXISTS Neighbourhood;
 CREATE TABLE Neighbourhood(
@@ -123,6 +130,12 @@ CREATE TABLE Covid(
     new_cases INTEGER,
     PRIMARY KEY (neighborhood)
 );
+
+
+INSERT INTO Admin VALUES
+    ('admin', 'adminpwd'),
+    ('cs615', 'database');
+
 
 INSERT INTO Covid VALUES 
     ('Bayview Hunters Point', 37394, 1962, 352),

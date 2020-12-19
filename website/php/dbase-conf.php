@@ -1,7 +1,6 @@
 <?php
-        //local server
-        $dbhost = "localhost"; // database server name
+        $dbhost = "127.0.0.1"; // database server name
         $dbuser = "root"; // dbase username
-        $dbpass = "YEn@n10i1995"; // dbase password
+        $dbpass = "199288"; // dbase password
         $dbname = "final_project"; // name of db 
 ?>

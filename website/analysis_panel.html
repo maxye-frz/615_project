@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html  >
+<html >
 <head>
   <!-- Site made with Mobirise Website Builder v5.2.0, https://mobirise.com -->
   <meta charset="UTF-8">
@@ -10,7 +10,7 @@
   <meta name="description" content="">
   
   
-  <title>Admin Interface</title>
+  <title>Data Panel</title>
   <link rel="stylesheet" href="assets/tether/tether.min.css">
   <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-grid.min.css">
@@ -33,7 +33,7 @@
             <div class="navbar-brand">
                 <span class="navbar-logo">
                     <a href="index.html"> <!-- Change url -->
-                            <img src="assets/images/mbr-121x86.png" alt="Mobirise" style="height: 3.8rem;">
+                        <img src="assets/images/mbr-121x86.png" alt="Mobirise" style="height: 3.8rem;">
                     </a>
                 </span>
                 <span class="navbar-caption-wrap"><a class="navbar-caption text-black display-7" href="index.html">SNOWBNB</a></span><!-- Change url -->
@@ -57,51 +57,89 @@
 
 <div style="height:100px; width:100%; clear:both;"></div>
 
-
-<section class="gallery2 cid-sjxsCiG78O" id="gallery2-w">
+<section class="content1 cid-sjxGrlKGuk" id="content1-11">
     
     
     <div class="container">
-        <div class="mbr-section-head">
-            <h4 class="mbr-section-title mbr-fonts-style align-center mb-0 display-2"><strong>Admin Panel</strong></h4>
-            
-        </div>
         <div class="row mt-4">
             <div class="item features-image сol-12 col-md-6 col-lg-6">
                 <div class="item-wrapper">
-                    <div class="item-img">
-                        <img src="assets/images/datapanel.jpeg">
-                    </div>
                     <div class="item-content">
-                        <h5 class="item-title mbr-fonts-style display-5">Data Panel</h5>
-                        
+                        <h5 class="item-title mbr-fonts-style display-5"><strong>Listing Data</strong></h5>
+                        <p class="mbr-text mbr-fonts-style mt-3 display-7">Listing data analysis shows the aggregated results of listings in different neighborhoods.
+                            <br /> <a href="php/listing_table.php" class="text-primary">View table</a>
                     </div>
-                    <div class="mbr-section-btn item-footer mt-2"><a href="data_panel.html" class="btn btn-primary item-btn display-7" target="_blank">Start
-                            Now!</a></div>
+                    
                 </div>
             </div>
+
             <div class="item features-image сol-12 col-md-6 col-lg-6">
                 <div class="item-wrapper">
-                    <div class="item-img">
-                        <img src="assets/images/analysispanel.jpg">
-                    </div>
                     <div class="item-content">
-                        <h5 class="item-title mbr-fonts-style display-5">Analysis Panel</h5>
-                        
-                        
+                        <h5 class="item-title mbr-fonts-style display-5"><strong>Park Data</strong></h5>
+                        <p class="mbr-text mbr-fonts-style mt-3 display-7"> Park data analysis shows the aggregated ratings and average size of parks in each enighborhood.
+                            Click the linkes below to modify listing data.
+                            <br /> <a href="php/park_table.php" class="text-primary">View table</a>
                     </div>
-                    <div class="mbr-section-btn item-footer mt-2">
-                        <a href="analysis_panel.html" class="btn btn-primary item-btn display-7" target="_blank">Start
-                            Now!</a>
-                    </div>
+                    
                 </div>
             </div>
-            
+
+            <div class="item features-image сol-12 col-md-6 col-lg-6">
+                <div class="item-wrapper">
+                    <div class="item-content">
+                        <h5 class="item-title mbr-fonts-style display-5"><strong>Covid Data</strong></h5>
+                        <p class="mbr-text mbr-fonts-style mt-3 display-7"> This gives a view on Covid cases in every neighborhood in San Francisco, and some corresponding statistics.
+                            <br /> <a href="php/covid_table.php" class="text-primary">View table</a>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="item features-image сol-12 col-md-6 col-lg-6">
+                <div class="item-wrapper">
+                    <div class="item-content">
+                        <h5 class="item-title mbr-fonts-style display-5"><strong>Location data</strong></h5>
+                        <p class="mbr-text mbr-fonts-style mt-3 display-7"> This shows the relations between covid cases, airbnb listing ratings and park ratings based on their locations.
+                            Click the linkes below to modify listing data.
+                            <br /> <a href="php/location_table.php" class="text-primary">View table</a>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="item features-image сol-12 col-md-6 col-lg-6">
+                <div class="item-wrapper">
+                    <div class="item-content">
+                        <h5 class="item-title mbr-fonts-style display-5"><strong>Joined Data</strong></h5>
+                        <p class="mbr-text mbr-fonts-style mt-3 display-7"> This gives a joined view of Airbnb listings, park scores, Covid cases in all neighborhoods in San Francisco.
+                            <br /> <a href="php/joined_table.php" class="text-primary">View table</a>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="item features-image сol-12 col-md-6 col-lg-6">
+                <div class="item-wrapper">
+                    <div class="item-content">
+                        <h5 class="item-title mbr-fonts-style display-5"><strong>Health Recommendation</strong></h5>
+                        <p class="mbr-text mbr-fonts-style mt-3 display-7"> This lists a recommendation to the neighborhoods based on their covid new to cumulative cases ratio, location rating and park scores in that order.
+                            <br /> <a href="php/health_table.php" class="text-primary">View table</a>
+                    </div>
+                    
+                </div>
+            </div>
+
+
         </div>
     </div>
 </section>
 <section style="background-color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; color:#aaa; font-size:12px; padding: 0; align-items: center; display: flex;">
-    <a href="https://mobirise.site/k" style="flex: 1 1; height: 3rem; padding-left: 1rem;"></a>
+    
+    <div style="height:300px; width:100%; clear:both;"></div>
+    
+    <a href="https://mobirise.site/e" style="flex: 1 1; height: 3rem; padding-left: 1rem;"></a>
+</section>
     <script src="assets/web/assets/jquery/jquery.min.js"></script>  <script src="assets/popper/popper.min.js"></script>  <script src="assets/tether/tether.min.js"></script>  <script src="assets/bootstrap/js/bootstrap.min.js"></script>  <script src="assets/smoothscroll/smooth-scroll.js"></script>  <script src="assets/dropdown/js/nav-dropdown.js"></script>  <script src="assets/dropdown/js/navbar-dropdown.js"></script>  <script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>  <script src="assets/theme/js/script.js"></script>  
   
   

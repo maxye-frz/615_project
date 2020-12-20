@@ -563,3 +563,136 @@ BEGIN
     END IF;
 END;
 //
+
+
+DROP PROCEDURE IF EXISTS ParkAnalysis; //
+CREATE PROCEDURE ParkAnalysis()
+BEGIN
+
+    Select zipcode, COUNT(park) AS park_count, AVG(score) AS average_park_score, AVG(square_feet) AS average_square_feet
+    FROM Park
+    WHERE zipcode != 0
+    GROUP BY zipcode
+    ORDER BY zipcode ASC;
+
+END;
+//
+
+DROP PROCEDURE IF EXISTS ListingAnalysis; //
+CREATE PROCEDURE ListingAnalysis()
+BEGIN
+    SELECT neighbourhood_cleansed as neighborhood, 
+            COUNT(listing_id) AS listing_count,
+            AVG(review_scores_rating) AS average_review_rating,
+            AVG(review_scores_accuracy) AS average_accuracy,
+            AVG(review_scores_cleanliness) AS average_cleanliness,
+            AVG(review_scores_checkin) AS average_checkin,
+            AVG(review_scores_communication) AS average_communication,
+            AVG(review_scores_location) AS average_location,
+            AVG(review_scores_value) AS average_value
+    FROM Listing
+    GROUP BY neighbourhood_cleansed
+    ORDER BY neighbourhood_cleansed ASC;
+END;
+//
+
+
+DROP PROCEDURE IF EXISTS CovidAnalysis; //
+CREATE PROCEDURE CovidAnalysis()
+BEGIN
+    SELECT * FROM Covid
+    ORDER BY cumulative_cases DESC;
+END;
+//
+
+
+DROP PROCEDURE IF EXISTS AllAnalysis; //
+CREATE PROCEDURE AllAnalysis()
+BEGIN
+    SELECT z.airbnb_neighbourhood AS neighborhood,
+            l.listing_count, l.average_review_rating,
+            p.park_count, p.average_park_score,
+            c.cumulative_cases, c.new_cases
+    FROM Zipcode as z, 
+        (SELECT neighbourhood_cleansed as neighborhood, 
+            COUNT(listing_id) AS listing_count,
+            AVG(review_scores_rating) AS average_review_rating,
+            AVG(review_scores_accuracy) AS average_accuracy,
+            AVG(review_scores_cleanliness) AS average_cleanliness,
+            AVG(review_scores_checkin) AS average_checkin,
+            AVG(review_scores_communication) AS average_communication,
+            AVG(review_scores_location) AS average_location,
+            AVG(review_scores_value) AS average_value
+        FROM Listing
+        GROUP BY neighbourhood_cleansed) as l, 
+        (Select zipcode, COUNT(park) AS park_count, AVG(score) AS average_park_score
+        FROM Park
+        WHERE zipcode != 0
+        GROUP BY zipcode) as p, 
+        Covid as c
+    WHERE z.airbnb_neighbourhood = l.neighborhood
+    AND z.covid_neighborhood = c.neighborhood
+    AND z.zipcode = p.zipcode
+    ORDER BY z.airbnb_neighbourhood;
+END;
+//
+
+DROP PROCEDURE IF EXISTS Location;  //
+CREATE PROCEDURE Location()
+BEGIN
+    SELECT z.airbnb_neighbourhood AS neighborhood,
+            l.listing_count, l.average_review_rating,
+            p.park_count, p.average_park_score,
+            c.cumulative_cases, c.new_cases
+    FROM Zipcode as z, 
+        (SELECT neighbourhood_cleansed as neighborhood, 
+            COUNT(listing_id) AS listing_count,
+            AVG(review_scores_rating) AS average_review_rating,
+            AVG(review_scores_accuracy) AS average_accuracy,
+            AVG(review_scores_cleanliness) AS average_cleanliness,
+            AVG(review_scores_checkin) AS average_checkin,
+            AVG(review_scores_communication) AS average_communication,
+            AVG(review_scores_location) AS average_location,
+            AVG(review_scores_value) AS average_value
+        FROM Listing
+        GROUP BY neighbourhood_cleansed) as l, 
+        (Select zipcode, COUNT(park) AS park_count, AVG(score) AS average_park_score
+        FROM Park
+        WHERE zipcode != 0
+        GROUP BY zipcode) as p, 
+        Covid as c
+    WHERE z.airbnb_neighbourhood = l.neighborhood
+    AND z.covid_neighborhood = c.neighborhood
+    AND z.zipcode = p.zipcode
+    ORDER BY z.airbnb_neighbourhood;
+END;
+//
+
+
+DROP PROCEDURE IF EXISTS HealthRec;  //
+CREATE PROCEDURE HealthRec()
+BEGIN
+    SELECT z.airbnb_neighbourhood AS neighborhood,
+            l.listing_count, l.average_location_rating,
+            p.park_count,
+            c.cumulative_cases, 
+            c.new_cases,
+            c.new_cases/c.cumulative_cases AS new_to_cumulative_ratio
+    FROM Zipcode as z, 
+        (SELECT neighbourhood_cleansed as neighborhood, 
+            COUNT(listing_id) AS listing_count,
+            AVG(review_scores_location) AS average_location_rating
+        FROM Listing
+        GROUP BY neighbourhood_cleansed) as l,
+        (Select zipcode, COUNT(park) AS park_count, AVG(score) AS average_park_score
+        FROM Park
+        WHERE zipcode != 0
+        GROUP BY zipcode) as p,  
+        Covid as c
+    WHERE z.airbnb_neighbourhood = l.neighborhood
+    AND z.covid_neighborhood = c.neighborhood
+    AND z.zipcode = p.zipcode
+    AND cumulative_cases != 'NULL'
+    ORDER BY new_to_cumulative_ratio ASC, l.average_location_rating DESC, p.park_count DESC;
+END;
+//

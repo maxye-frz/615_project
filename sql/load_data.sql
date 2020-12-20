@@ -238,7 +238,7 @@ LOAD DATA LOCAL INFILE 'data/airbnb_covid_neighborhood.csv'
 INTO TABLE Zipcode
 FIELDS TERMINATED BY ',' 
 ENCLOSED BY '"'
-LINES TERMINATED BY '\r\n'
+LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (airbnb_neighbourhood, covid_neighborhood, zipcode);
 
@@ -247,7 +247,7 @@ LOAD DATA LOCAL INFILE 'data/neighbourhoods.csv'
 INTO TABLE Neighbourhood
 FIELDS TERMINATED BY ',' 
 ENCLOSED BY '"'
-LINES TERMINATED BY '\r\n'
+LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (name, city, state, country);
 
@@ -257,7 +257,7 @@ IGNORE
 INTO TABLE Host 
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
-LINES TERMINATED BY '\r\n'
+LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (host_id, host_url, host_name, @host_since, host_location, host_about, host_response_time, 
     @host_response_rate, @host_acceptance_rate, host_is_superhost,  host_thumbnail_url, host_picture_url,
@@ -273,7 +273,7 @@ IGNORE
 INTO TABLE Listing 
 FIELDS TERMINATED BY ',' 
 ENCLOSED BY '"'
-LINES TERMINATED BY '\r\n'
+LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (listing_id,listing_url,name,description,neighborhood_overview,picture_url,host_id,neighbourhood,neighbourhood_cleansed,
     latitude,longitude,property_type,room_type,accommodates,bathrooms_text,bedrooms,beds,amenities,@price,
@@ -292,7 +292,7 @@ IGNORE
 INTO TABLE Reviewer
 FIELDS TERMINATED BY ',' 
 ENCLOSED BY '"'
-LINES TERMINATED BY '\r\n'
+LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (reviewer_id, reviewer_name);
 
@@ -312,7 +312,7 @@ LOAD DATA LOCAL INFILE 'data/SF_Park_Scores.csv'
 INTO TABLE Park
 FIELDS TERMINATED BY ',' 
 ENCLOSED BY '"'
-LINES TERMINATED BY '\r\n'
+LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (parkID, PSA, park, FQ, score, facility_type, facility_name, address, state, zipcode, floor_count, square_feet, perimeter_length, acres, longitude, latitude);
 

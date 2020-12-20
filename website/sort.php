@@ -36,11 +36,24 @@ $sortby = $_POST['sort'];
 $covid_stmt = "CALL NeighborhoodInfo('$neighborhood')";
 $stmt = "CALL ListingSearchSortByReview('$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
 if ($sortby == 'price') { //  sort by price
-    $stmt = "CALL ListingSearchSortByPrice('$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
-} else if ($sortby == 'review') { //sort by review
-    $stmt = "CALL ListingSearchSortByReview('$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
+    if (!isset($search) || empty($search)) {
+        $stmt = "CALL ListingSearchSortByPrice('$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
+    } else {
+        $stmt = "CALL WordListingSearchSortByPrice('$search', '$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
+    }
+} else if ($sortby == 'review') {
+     //sort by review
+     if (!isset($search) || empty($search)) {
+        $stmt = "CALL ListingSearchSortByReview('$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
+    } else {
+        $stmt = "CALL WordListingSearchSortByReview('$search', '$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
+    }
 } else if ($sortby == 'rating') { //sort by rating 
-    $stmt = "CALL ListingSearchSortByRating('$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
+    if (!isset($search) || empty($search)) {
+        $stmt = "CALL ListingSearchSortByRating('$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
+    } else {
+        $stmt = "CALL WordListingSearchSortByRating('$search', '$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
+    }
 }
 
 // covid part

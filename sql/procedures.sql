@@ -15,17 +15,17 @@ GROUP BY Zipcode;
 DROP PROCEDURE IF EXISTS NeighborhoodInfo;//
 CREATE PROCEDURE NeighborhoodInfo(IN neighborhood VARCHAR(30))
 BEGIN
-	IF EXISTS (SELECT *
-				FROM Zipcode AS Z
-				WHERE Z.airbnb_neighbourhood = neighborhood) THEN
-		SELECT Z.zipcode, Z.airbnb_neighbourhood, C.resident_population, C.cumulative_cases, C.Rate_of_cases_per_10000, C.new_cases, C.Rate_of_new_cases_per_10000, P.avg_score
-		FROM Zipcode as Z
+    IF EXISTS (SELECT *
+                FROM Zipcode AS Z
+                WHERE Z.airbnb_neighbourhood = neighborhood) THEN
+        SELECT Z.zipcode, Z.airbnb_neighbourhood, C.resident_population, C.cumulative_cases, C.Rate_of_cases_per_10000, C.new_cases, C.Rate_of_new_cases_per_10000, P.avg_score
+        FROM Zipcode as Z
         Join Covid as C ON Z.covid_neighborhood = C.neighborhood
         LEFT JOIN ParkScore as P ON Z.zipcode = P.Zipcode
-		WHERE Z.airbnb_neighbourhood = neighborhood;
-	ELSE
-		SELECT 'No data is found.' AS 'Error Message';
-	END IF;
+        WHERE Z.airbnb_neighbourhood = neighborhood;
+    ELSE
+        SELECT 'No data is found.' AS 'Error Message';
+    END IF;
 END;
 //
 
@@ -181,6 +181,19 @@ BEGIN
 END;
 //
 
+DROP PROCEDURE IF EXISTS FindHostIDByListingID; //
+CREATE PROCEDURE FindHostIDByListingID(IN listing_id INT)
+BEGIN
+    IF EXISTS(SELECT listing_id FROM Listing) THEN
+        SELECT host_id
+        FROM Listing AS L
+        WHERE L.listing_id = listing_id;
+    ELSE
+        SELECT 'No data is found.' AS 'Error Message';
+    END IF;
+END;
+//
+
 DROP PROCEDURE IF EXISTS FindHostByID; //
 CREATE PROCEDURE FindHostByID(IN host_id INT)
 BEGIN
@@ -211,45 +224,45 @@ END;
 
 DROP PROCEDURE IF EXISTS UpdateHost;  //
 CREATE PROCEDURE UpdateHost(IN host_id INT, 
-    					IN host_url TEXT, 
-    					IN host_name TEXT, 
-    					IN host_since DATE, 
-    					IN host_location TEXT,
-    					IN host_about TEXT, 
-    					IN host_response_time TEXT, 
-    					IN host_response_rate INT, 
-    					IN host_acceptance_rate INT, 
-    					IN host_is_superhost VARCHAR(1), 
-    					IN host_thumbnail_url TEXT,
-    					IN host_picture_url TEXT,
-    					IN host_neighbourhood TEXT, 
-    					IN host_listings_count INT,
-    					IN host_total_listings_count INT,
-    					IN host_verifications TEXT, 
-    					IN host_has_profile_pic VARCHAR(1), 
-    					IN host_identity_verified VARCHAR(2))
+                        IN host_url TEXT, 
+                        IN host_name TEXT, 
+                        IN host_since DATE, 
+                        IN host_location TEXT,
+                        IN host_about TEXT, 
+                        IN host_response_time TEXT, 
+                        IN host_response_rate INT, 
+                        IN host_acceptance_rate INT, 
+                        IN host_is_superhost VARCHAR(1), 
+                        IN host_thumbnail_url TEXT,
+                        IN host_picture_url TEXT,
+                        IN host_neighbourhood TEXT, 
+                        IN host_listings_count INT,
+                        IN host_total_listings_count INT,
+                        IN host_verifications TEXT, 
+                        IN host_has_profile_pic VARCHAR(1), 
+                        IN host_identity_verified VARCHAR(2))
 BEGIN
-	INSERT INTO Host 
-	VALUES (host_id, 
-    		host_url, 
-    		host_name, 
-    		host_since, 
-    		host_location,
-    		host_about, 
-    		host_response_time, 
-    		host_response_rate, 
-    		host_acceptance_rate, 
-    		host_is_superhost, 
-    		host_thumbnail_url, 
-   			host_picture_url, 
-    		host_neighbourhood, 
-    		host_listings_count, 
-    		host_total_listings_count, 
-    		host_verifications, 
-    		host_has_profile_pic, 
-    		host_identity_verified)
-	ON DUPLICATE KEY UPDATE
-	host_url = VALUES(host_url), 
+    INSERT INTO Host 
+    VALUES (host_id, 
+            host_url, 
+            host_name, 
+            host_since, 
+            host_location,
+            host_about, 
+            host_response_time, 
+            host_response_rate, 
+            host_acceptance_rate, 
+            host_is_superhost, 
+            host_thumbnail_url, 
+            host_picture_url, 
+            host_neighbourhood, 
+            host_listings_count, 
+            host_total_listings_count, 
+            host_verifications, 
+            host_has_profile_pic, 
+            host_identity_verified)
+    ON DUPLICATE KEY UPDATE
+    host_url = VALUES(host_url), 
     host_name = VALUES(host_name), 
     host_since = VALUES(host_since), 
     host_location = VALUES(host_location),
@@ -259,7 +272,7 @@ BEGIN
     host_acceptance_rate = VALUES(host_acceptance_rate), 
     host_is_superhost = VALUES(host_is_superhost), 
     host_thumbnail_url = VALUES(host_thumbnail_url), 
-   	host_picture_url = VALUES(host_picture_url), 
+    host_picture_url = VALUES(host_picture_url), 
     host_neighbourhood = VALUES(host_neighbourhood), 
     host_listings_count = VALUES(host_listings_count), 
     host_total_listings_count = VALUES(host_total_listings_count), 
@@ -277,9 +290,9 @@ END;
 DROP PROCEDURE IF EXISTS DeleteHost; //
 CREATE PROCEDURE DeleteHost(IN host_id INT)
 BEGIN
-	IF EXISTS (SELECT Host.host_id FROM Host WHERE Host.host_id = host_id) THEN
-	DELETE FROM Host WHERE Host.host_id = host_id;
-	END IF;
+    IF EXISTS (SELECT Host.host_id FROM Host WHERE Host.host_id = host_id) THEN
+    DELETE FROM Host WHERE Host.host_id = host_id;
+    END IF;
 END;
 //
 -- CALL DeleteHost(1234);//
@@ -288,11 +301,11 @@ END;
 DROP PROCEDURE IF EXISTS CheckHost; //
 CREATE PROCEDURE CheckHost(IN host_id INT)
 BEGIN
-	IF EXISTS (SELECT Host.host_id FROM Host WHERE Host.host_id = host_id) THEN
-		SELECT 'Host exists' AS 'Message';
-	ELSE
-		SELECT 'Host does not exists' AS 'Message';
-	END IF;
+    IF EXISTS (SELECT Host.host_id FROM Host WHERE Host.host_id = host_id) THEN
+        SELECT 'Host exists' AS 'Message';
+    ELSE
+        SELECT 'Host does not exists' AS 'Message';
+    END IF;
 END;
 //
 
@@ -301,7 +314,7 @@ END;
 
 DROP PROCEDURE IF EXISTS UpdateListing;  //
 CREATE PROCEDURE UpdateListing(IN listing_id INT, 
-	IN listing_url TEXT, 
+    IN listing_url TEXT, 
     IN name TEXT, 
     IN description TEXT, 
     IN neighborhood_overview TEXT, 
@@ -339,83 +352,83 @@ CREATE PROCEDURE UpdateListing(IN listing_id INT,
     IN calculated_host_listings_count_shared_rooms INT, 
     IN reviews_per_month DECIMAL(3, 2))
 BEGIN
-	INSERT INTO Listing 
-	VALUES (listing_id, 
-			listing_url, 
- 			name, 
- 			description, 
-			neighborhood_overview, 
-    		picture_url, 
-    		host_id, 
-    		neighbourhood, 
-    		neighbourhood_cleansed, 
-    		latitude, 
-    		longitude, 
-    		property_type, 
-    		room_type, 
-    		accommodates, 
-    		bathrooms_text, 
-    		bedrooms, 
-    		beds, 
-    		amenities, 
-    		price, 
-    		minimum_nights, 
-    		maximum_nights, 
-    		availability_365, 
-    		number_of_reviews, 
-    		first_review, 
-    		last_review, 
-    		review_scores_rating, 
-    		review_scores_accuracy, 
-    		review_scores_cleanliness, 
-    		review_scores_checkin, 
-    		review_scores_communication, 
-    		review_scores_location, 
-    		review_scores_value, 
-    		instant_bookable, 
-    		calculated_host_listings_count, 
-    		calculated_host_listings_count_entire_homes, 
-    		calculated_host_listings_count_private_rooms,
-    		calculated_host_listings_count_shared_rooms, 
-    		reviews_per_month)
-	ON DUPLICATE KEY UPDATE
-		listing_url = VALUES(listing_url), 
- 		name = VALUES(name), 
- 		description = VALUES(description), 
-		neighborhood_overview = VALUES(neighborhood_overview), 
-    	picture_url = VALUES(picture_url), 
-    	host_id = VALUES(host_id), 
-    	neighbourhood = VALUES(neighbourhood), 
-    	neighbourhood_cleansed = VALUES(neighbourhood_cleansed), 
-    	latitude = VALUES(latitude), 
-    	longitude = VALUES(longitude), 
-    	property_type = VALUES(property_type), 
-    	room_type = VALUES(room_type), 
-    	accommodates = VALUES(accommodates), 
-    	bathrooms_text = VALUES(bathrooms_text), 
-    	bedrooms = VALUES(bedrooms), 
-    	beds = VALUES(beds), 
-    	amenities = VALUES(amenities), 
-    	price = VALUES(price), 
-    	minimum_nights = VALUES(minimum_nights), 
-    	maximum_nights = VALUES(maximum_nights), 
-    	availability_365 = VALUES(availability_365), 
-    	number_of_reviews = VALUES(number_of_reviews), 
-    	first_review = VALUES(first_review), 
-    	last_review = VALUES(last_review), 
-    	review_scores_rating = VALUES(review_scores_rating), 
-    	review_scores_accuracy = VALUES(review_scores_accuracy), 
-    	review_scores_cleanliness = VALUES(review_scores_cleanliness), 
-    	review_scores_checkin = VALUES(review_scores_checkin), 
-    	review_scores_communication = VALUES(review_scores_communication), 
-    	review_scores_location = VALUES(review_scores_location), 
-    	review_scores_value = VALUES(review_scores_value), 
-    	instant_bookable = VALUES(instant_bookable), 
-    	calculated_host_listings_count = VALUES(calculated_host_listings_count), 
-    	calculated_host_listings_count_entire_homes = VALUES(calculated_host_listings_count_entire_homes), 
-    	calculated_host_listings_count_private_rooms = VALUES(calculated_host_listings_count_private_rooms),
-    	calculated_host_listings_count_shared_rooms = VALUES(calculated_host_listings_count_shared_rooms), 
-    	reviews_per_month = VALUES(reviews_per_month);
+    INSERT INTO Listing 
+    VALUES (listing_id, 
+            listing_url, 
+            name, 
+            description, 
+            neighborhood_overview, 
+            picture_url, 
+            host_id, 
+            neighbourhood, 
+            neighbourhood_cleansed, 
+            latitude, 
+            longitude, 
+            property_type, 
+            room_type, 
+            accommodates, 
+            bathrooms_text, 
+            bedrooms, 
+            beds, 
+            amenities, 
+            price, 
+            minimum_nights, 
+            maximum_nights, 
+            availability_365, 
+            number_of_reviews, 
+            first_review, 
+            last_review, 
+            review_scores_rating, 
+            review_scores_accuracy, 
+            review_scores_cleanliness, 
+            review_scores_checkin, 
+            review_scores_communication, 
+            review_scores_location, 
+            review_scores_value, 
+            instant_bookable, 
+            calculated_host_listings_count, 
+            calculated_host_listings_count_entire_homes, 
+            calculated_host_listings_count_private_rooms,
+            calculated_host_listings_count_shared_rooms, 
+            reviews_per_month)
+    ON DUPLICATE KEY UPDATE
+        listing_url = VALUES(listing_url), 
+        name = VALUES(name), 
+        description = VALUES(description), 
+        neighborhood_overview = VALUES(neighborhood_overview), 
+        picture_url = VALUES(picture_url), 
+        host_id = VALUES(host_id), 
+        neighbourhood = VALUES(neighbourhood), 
+        neighbourhood_cleansed = VALUES(neighbourhood_cleansed), 
+        latitude = VALUES(latitude), 
+        longitude = VALUES(longitude), 
+        property_type = VALUES(property_type), 
+        room_type = VALUES(room_type), 
+        accommodates = VALUES(accommodates), 
+        bathrooms_text = VALUES(bathrooms_text), 
+        bedrooms = VALUES(bedrooms), 
+        beds = VALUES(beds), 
+        amenities = VALUES(amenities), 
+        price = VALUES(price), 
+        minimum_nights = VALUES(minimum_nights), 
+        maximum_nights = VALUES(maximum_nights), 
+        availability_365 = VALUES(availability_365), 
+        number_of_reviews = VALUES(number_of_reviews), 
+        first_review = VALUES(first_review), 
+        last_review = VALUES(last_review), 
+        review_scores_rating = VALUES(review_scores_rating), 
+        review_scores_accuracy = VALUES(review_scores_accuracy), 
+        review_scores_cleanliness = VALUES(review_scores_cleanliness), 
+        review_scores_checkin = VALUES(review_scores_checkin), 
+        review_scores_communication = VALUES(review_scores_communication), 
+        review_scores_location = VALUES(review_scores_location), 
+        review_scores_value = VALUES(review_scores_value), 
+        instant_bookable = VALUES(instant_bookable), 
+        calculated_host_listings_count = VALUES(calculated_host_listings_count), 
+        calculated_host_listings_count_entire_homes = VALUES(calculated_host_listings_count_entire_homes), 
+        calculated_host_listings_count_private_rooms = VALUES(calculated_host_listings_count_private_rooms),
+        calculated_host_listings_count_shared_rooms = VALUES(calculated_host_listings_count_shared_rooms), 
+        reviews_per_month = VALUES(reviews_per_month);
 END;
 //
 
@@ -425,9 +438,9 @@ END;
 DROP PROCEDURE IF EXISTS DeleteListing; //
 CREATE PROCEDURE DeleteListing(IN listing_id INT)
 BEGIN
-	IF EXISTS (SELECT Listing.listing_id FROM Listing WHERE Listing.listing_id = listing_id) THEN
-	DELETE FROM Listing WHERE Listing.listing_id = listing_id;
-	END IF;
+    IF EXISTS (SELECT Listing.listing_id FROM Listing WHERE Listing.listing_id = listing_id) THEN
+    DELETE FROM Listing WHERE Listing.listing_id = listing_id;
+    END IF;
 END;
 //
 -- CALL DeleteListing(1234);//

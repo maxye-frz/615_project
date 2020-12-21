@@ -19,8 +19,11 @@ if (isset($_GET['listingid'])) {
 
 $listing_stmt = "CALL FindListingByID('$listing_id')";
 $review_stmt = "CALL FindReviewByListingID('$listing_id')";
-$host_stmt = "CALL FindHostByID('$listing_id')";   
-
+$host_result = $mysqli->query("CALL FindHostIDByListingID('$listing_id')");
+$host_id = $host_result->fetch_row()[0];
+$mysqli->next_result();
+echo $host_id;
+$host_stmt = "CALL FindHostByID('$host_id')";
 
 $locations = [];
 

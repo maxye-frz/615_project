@@ -53,8 +53,7 @@ CREATE TABLE Host(
     host_verifications TEXT NOT NULL, 
     host_has_profile_pic VARCHAR(1) NOT NULL, 
     host_identity_verified VARCHAR(2) NOT NULL,
-    PRIMARY KEY (host_id),
-    UNIQUE (host_id)
+    PRIMARY KEY (host_id)
 );
 
 
@@ -119,7 +118,6 @@ CREATE TABLE Review(
     review_date DATE NOT NULL,
     reviewer_id INT NOT NULL,
     comments TEXT,
-    sentiment_score INT,
     PRIMARY KEY (review_id),
     FOREIGN KEY (listing_id) REFERENCES Listing(listing_id),
     FOREIGN KEY (reviewer_id) REFERENCES Reviewer(reviewer_id)

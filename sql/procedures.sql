@@ -457,7 +457,7 @@ BEGIN
                     AND L.price < price_high) THEN
         SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, 
             s.host_id, s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, 
-            s.bathrooms_text, L.latitude, L.longitude
+            s.bathrooms_text, s.latitude, s.longitude
         FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, 
                 L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, 
                 L.bathrooms_text, L.latitude, L.longitude
@@ -477,7 +477,7 @@ BEGIN
     END IF;
 END;
 //
--- call WordListingSearch('cul de sac', 'Western Addition', 'Entire home/apt', 3, 1, 2, 100, 150);//
+-- call WordListingSearch('cul de sac', 'Western Addition', 'Entire home/apt', 3, 1, 2, 100, 150, 0, 10);//
 
 
 -- listing search procedure and sort by price
@@ -496,7 +496,7 @@ BEGIN
                     AND L.price < price_high) THEN
         SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, s.host_id, 
             s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, 
-            s.bathrooms_text, L.latitude, L.longitude
+            s.bathrooms_text, s.latitude, s.longitude
         FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, 
                 L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, 
                 L.review_scores_rating, L.bathrooms_text, L.latitude, L.longitude
@@ -537,7 +537,7 @@ BEGIN
                     AND L.price < price_high) THEN
         SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, 
             s.host_id, s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, 
-            s.bathrooms_text, L.latitude, L.longitude
+            s.bathrooms_text, s.latitude, s.longitude
         FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, 
                 L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, 
                 L.review_scores_rating, L.bathrooms_text, L.latitude, L.longitude
@@ -577,7 +577,7 @@ BEGIN
                     AND L.price < price_high) THEN
         SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, 
             s.host_id, s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, 
-            s.bathrooms_text, L.latitude, L.longitude
+            s.bathrooms_text, s.latitude, s.longitude
         FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, 
                 L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, 
                 L.review_scores_rating, L.bathrooms_text, L.latitude, L.longitude

@@ -19,7 +19,9 @@ if (isset($_GET['listingid'])) {
 
 $listing_stmt = "CALL FindListingByID('$listing_id')";
 $review_stmt = "CALL FindReviewByListingID('$listing_id')";
-$host_id = 1169;
+$host_stmt = "CALL FindHostByID('$listing_id')";   
+
+
 $locations = [];
 
 // Call the select statement
@@ -132,7 +134,6 @@ if ($mysqli->multi_query($listing_stmt)) {
 }
 
 // display host info
-$host_stmt = "CALL FindHostByID('1169')";   
 if ($result = $mysqli->query($host_stmt)) {
     $row = $result->fetch_row();
     $host_id = $row[0];

@@ -1,8 +1,4 @@
-# Things might need change before use:
-# 1. Neighborhood zipcode
-# 2. path to the data when loading
-# use mysql> show global variables like 'local_infile'; to check if local_infile is disabled;
-# enable it with mysql> set global local_infile=true;
+-- load data before use:
 
 DROP DATABASE IF EXISTS final_project;
 
@@ -199,16 +195,6 @@ UPDATE Covid
 SET Rate_of_new_cases_per_10000 = new_cases/(resident_population/10000);
 
 
-DROP TABLE IF EXISTS Zipcode;
-CREATE TABLE Zipcode(
-    pairID INT NOT NULL AUTO_INCREMENT,
-    airbnb_neighbourhood VARCHAR(30) NOT NULL,
-    covid_neighborhood VARCHAR(50) NOT NULL,
-    zipcode INT NOT NULL,
-    PRIMARY KEY (pairID)
-);
-
-
 DROP TABLE IF EXISTS Park;
 CREATE TABLE Park(
     parkID INT NOT NULL,
@@ -228,6 +214,15 @@ CREATE TABLE Park(
     longitude FLOAT NOT NULL,
     latitude FLOAT NOT NULL,
     PRIMARY KEY (parkID)
+);
+
+DROP TABLE IF EXISTS Zipcode;
+CREATE TABLE Zipcode(
+    pairID INT NOT NULL AUTO_INCREMENT,
+    airbnb_neighbourhood VARCHAR(30) NOT NULL,
+    covid_neighborhood VARCHAR(50) NOT NULL,
+    zipcode INT NOT NULL,
+    PRIMARY KEY (pairID)
 );
 
 -- load data from '/data'
@@ -314,18 +309,6 @@ LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (parkID, PSA, park, FQ, score, facility_type, facility_name, address, state, zipcode, floor_count, square_feet, perimeter_length, acres, longitude, latitude);
 
--- # Replace neighbourhood_cleanse by zipcode(foreign key) in Listing
--- ALTER TABLE Listing
--- ADD zipcode INT;
 
--- ALTER TABLE Listing
--- ADD CONSTRAINT fk_neighborhood FOREIGN KEY (zipcode) REFERENCES Neighbourhood(zipcode);
-
--- UPDATE Listing
--- INNER JOIN Neighbourhood ON Listing.neighbourhood_cleansed = Neighbourhood.name
--- SET Listing.zipcode = Neighbourhood.zipcode;
-
--- ALTER TABLE Listing
--- DROP COLUMN neighbourhood_cleansed;
 
 

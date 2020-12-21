@@ -95,7 +95,7 @@ if ($mysqli->multi_query($stmt)) {
         if ($result = $mysqli->store_result()) { 
             $row = $result->fetch_row();
 
-            if ($row[0] == 'No data is found.'){
+            if (is_null($row) || $row[0] == 'No data is found.'){
                 echo "<div class=\"container justify-content-center\"><h5  style=\"text-align:center\">Sorry, no listing found</h5></div>";
             }
             else {

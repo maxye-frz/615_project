@@ -193,9 +193,9 @@ if ($mysqli->multi_query($review_stmt)) {
                                         <ul class=\"list mbr-fonts-style display-7\">";
     do {
         if ($result = $mysqli->store_result()) { 
+            
             $row = $result->fetch_row();
             do {   
-                    $row = $result->fetch_row();
                     $date = $row[0];
                     $comments = $row[1];
                     $name = $row[2]; 

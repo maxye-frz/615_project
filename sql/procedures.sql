@@ -19,10 +19,10 @@ BEGIN
 				FROM Zipcode AS Z
 				WHERE Z.airbnb_neighbourhood = neighborhood) THEN
 		SELECT Z.zipcode, Z.airbnb_neighbourhood, C.resident_population, C.cumulative_cases, C.Rate_of_cases_per_10000, C.new_cases, C.Rate_of_new_cases_per_10000, P.avg_score
-		FROM Zipcode as Z, Covid as C, ParkScore as P
-		WHERE Z.airbnb_neighbourhood = neighborhood
-			AND Z.covid_neighborhood = C.neighborhood
-			AND Z.zipcode = P.Zipcode;
+		FROM Zipcode as Z
+        Join Covid as C ON Z.covid_neighborhood = C.neighborhood
+        LEFT JOIN ParkScore as P ON Z.zipcode = P.Zipcode
+		WHERE Z.airbnb_neighbourhood = neighborhood;
 	ELSE
 		SELECT 'No data is found.' AS 'Error Message';
 	END IF;
@@ -33,7 +33,7 @@ END;
 
 -- listing search procedure
 DROP PROCEDURE IF EXISTS ListingSearch; //
-CREATE PROCEDURE ListingSearch(IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2))
+CREATE PROCEDURE ListingSearch(IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2), IN offset INT, IN no_of_records_per_page INT)
 
 BEGIN
     IF EXISTS (SELECT listing_id 
@@ -45,7 +45,7 @@ BEGIN
                     AND L.beds = beds 
                     AND L.price > price_low 
                     AND L.price < price_high) THEN
-        SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text
+        SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text, L.latitude, L.longitude
         FROM Listing AS L
         WHERE L.neighbourhood_cleansed = neighborhood 
             AND L.room_type = room_type 
@@ -54,7 +54,7 @@ BEGIN
             AND L.beds >= beds 
             AND L.price >= price_low 
             AND L.price <= price_high
-            LIMIT 10;
+            LIMIT offset, no_of_records_per_page;
     ELSE
         SELECT 'No data is found.' AS 'Error Message';
     END IF;
@@ -63,70 +63,9 @@ END;
 
 -- listing search procedure and sort by price
 DROP PROCEDURE IF EXISTS ListingSearchSortByPrice; //
-CREATE PROCEDURE ListingSearchSortByPrice(IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2))
-
-BEGIN
-    IF EXISTS (SELECT listing_id 
-                FROM Listing AS L 
-                WHERE L.neighbourhood_cleansed = neighborhood 
-                    AND L.room_type = room_type 
-                    AND L.accommodates >= accommodates 
-                    AND L.bedrooms = bedrooms 
-                    AND L.beds = beds 
-                    AND L.price > price_low 
-                    AND L.price < price_high) THEN
-        SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text
-        FROM Listing AS L
-        WHERE L.neighbourhood_cleansed = neighborhood 
-            AND L.room_type = room_type 
-            AND L.accommodates >= accommodates 
-            AND L.bedrooms >= bedrooms 
-            AND L.beds >= beds 
-            AND L.price >= price_low 
-            AND L.price <= price_high
-        ORDER BY L.price
-        LIMIT 10;
-    ELSE
-        SELECT 'No data is found.' AS 'Error Message';
-    END IF;
-END;
-//
-
-
--- listing search procedure and sort by price
-DROP PROCEDURE IF EXISTS ListingSearchSortByReview; //
-CREATE PROCEDURE ListingSearchSortByReview(IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2))
-
-BEGIN
-    IF EXISTS (SELECT listing_id 
-                FROM Listing AS L 
-                WHERE L.neighbourhood_cleansed = neighborhood 
-                    AND L.room_type = room_type 
-                    AND L.accommodates >= accommodates 
-                    AND L.bedrooms = bedrooms 
-                    AND L.beds = beds 
-                    AND L.price > price_low 
-                    AND L.price < price_high) THEN
-        SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text
-        FROM Listing AS L
-        WHERE L.neighbourhood_cleansed = neighborhood 
-            AND L.room_type = room_type 
-            AND L.accommodates >= accommodates 
-            AND L.bedrooms >= bedrooms 
-            AND L.beds >= beds 
-            AND L.price >= price_low 
-            AND L.price <= price_high
-        ORDER BY L.number_of_reviews DESC
-        LIMIT 10;
-    ELSE
-        SELECT 'No data is found.' AS 'Error Message';
-    END IF;
-END;
-//
-
--- listing search procedure and sort by price
-DROP PROCEDURE IF EXISTS ListingSearchSortByRating; //
-CREATE PROCEDURE ListingSearchSortByRating(IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2))
+CREATE PROCEDURE ListingSearchSortByPrice(IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), 
+        IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2), 
+        IN offset INT, IN no_of_records_per_page INT)
 
 BEGIN
     IF EXISTS (SELECT listing_id 
@@ -139,7 +78,79 @@ BEGIN
                     AND L.price > price_low 
                     AND L.price < price_high) THEN
         SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, 
-            L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text
+            L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, 
+            L.bathrooms_text, L.latitude, L.longitude
+        FROM Listing AS L
+        WHERE L.neighbourhood_cleansed = neighborhood 
+            AND L.room_type = room_type 
+            AND L.accommodates >= accommodates 
+            AND L.bedrooms >= bedrooms 
+            AND L.beds >= beds 
+            AND L.price >= price_low 
+            AND L.price <= price_high
+        ORDER BY L.price
+        LIMIT offset, no_of_records_per_page;
+    ELSE
+        SELECT 'No data is found.' AS 'Error Message';
+    END IF;
+END;
+//
+
+
+-- listing search procedure and sort by price
+DROP PROCEDURE IF EXISTS ListingSearchSortByReview; //
+CREATE PROCEDURE ListingSearchSortByReview(IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), 
+    IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2), 
+    IN offset INT, IN no_of_records_per_page INT)
+
+BEGIN
+    IF EXISTS (SELECT listing_id 
+                FROM Listing AS L 
+                WHERE L.neighbourhood_cleansed = neighborhood 
+                    AND L.room_type = room_type 
+                    AND L.accommodates >= accommodates 
+                    AND L.bedrooms = bedrooms 
+                    AND L.beds = beds 
+                    AND L.price > price_low 
+                    AND L.price < price_high) THEN
+        SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, 
+            L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, 
+            L.review_scores_rating, L.bathrooms_text, L.latitude, L.longitude
+        FROM Listing AS L
+        WHERE L.neighbourhood_cleansed = neighborhood 
+            AND L.room_type = room_type 
+            AND L.accommodates >= accommodates 
+            AND L.bedrooms >= bedrooms 
+            AND L.beds >= beds 
+            AND L.price >= price_low 
+            AND L.price <= price_high
+        ORDER BY L.number_of_reviews DESC
+        LIMIT offset, no_of_records_per_page;
+    ELSE
+        SELECT 'No data is found.' AS 'Error Message';
+    END IF;
+END;
+//
+
+-- listing search procedure and sort by price
+DROP PROCEDURE IF EXISTS ListingSearchSortByRating; //
+CREATE PROCEDURE ListingSearchSortByRating(IN neighborhood VARCHAR(30), IN room_type VARCHAR(20),
+    IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2), 
+    IN offset INT, IN no_of_records_per_page INT)
+
+BEGIN
+    IF EXISTS (SELECT listing_id 
+                FROM Listing AS L 
+                WHERE L.neighbourhood_cleansed = neighborhood 
+                    AND L.room_type = room_type 
+                    AND L.accommodates >= accommodates 
+                    AND L.bedrooms = bedrooms 
+                    AND L.beds = beds 
+                    AND L.price > price_low 
+                    AND L.price < price_high) THEN
+        SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, 
+            L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text, 
+            L.latitude, L.longitude
         FROM Listing AS L
         WHERE L.neighbourhood_cleansed = neighborhood 
             AND L.room_type = room_type 
@@ -149,7 +160,7 @@ BEGIN
             AND L.price >= price_low 
             AND L.price <= price_high
         ORDER BY L.review_scores_rating DESC
-        LIMIT 10;
+        LIMIT offset, no_of_records_per_page;
     ELSE
         SELECT 'No data is found.' AS 'Error Message';
     END IF;
@@ -161,7 +172,7 @@ CREATE PROCEDURE FindListingByID(IN listing_id INT)
 BEGIN
     IF EXISTS(SELECT listing_id FROM Listing) THEN
         SELECT L.name, L.neighbourhood_cleansed, L.picture_url, L.description, L.amenities, L.host_id, L.neighborhood_overview, 
-            L.property_type, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text
+            L.property_type, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text, L.latitude, L.longitude
         FROM Listing AS L
         WHERE L.listing_id = listing_id;
     ELSE
@@ -422,7 +433,7 @@ END;
 -- CALL DeleteListing(1234);//
 
 DROP PROCEDURE IF EXISTS WordSearch; //
-CREATE PROCEDURE WordSearch(IN inputWord TEXT)
+CREATE PROCEDURE WordSearch(IN inputWord TEXT, IN offset INT, IN no_of_records_per_page INT)
 BEGIN
     SELECT listing_id
     FROM Listing
@@ -432,7 +443,7 @@ END;
 
 -- listing search with words procedure
 DROP PROCEDURE IF EXISTS WordListingSearch; //
-CREATE PROCEDURE WordListingSearch(IN inputWord TEXT, IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2))
+CREATE PROCEDURE WordListingSearch(IN inputWord TEXT, IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2), IN offset INT, IN no_of_records_per_page INT)
 
 BEGIN
     IF EXISTS (SELECT listing_id 
@@ -444,8 +455,12 @@ BEGIN
                     AND L.beds = beds 
                     AND L.price > price_low 
                     AND L.price < price_high) THEN
-        SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, s.host_id, s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, s.bathrooms_text
-        FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text
+        SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, 
+            s.host_id, s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, 
+            s.bathrooms_text, L.latitude, L.longitude
+        FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, 
+                L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, 
+                L.bathrooms_text, L.latitude, L.longitude
                 FROM Listing as L
                 WHERE L.neighbourhood_cleansed = neighborhood 
                 AND L.room_type = room_type 
@@ -454,8 +469,9 @@ BEGIN
                 AND L.beds >= beds 
                 AND L.price >= price_low 
                 AND L.price <= price_high) AS s
-        WHERE s.name LIKE CONCAT('%', inputWord, '%') OR s.description LIKE CONCAT('%', inputWord, '%') OR s.neighborhood_overview LIKE CONCAT('%', inputWord, '%') OR s.amenities LIKE CONCAT('%', inputWord, '%')
-            LIMIT 10;
+        WHERE s.name LIKE CONCAT('%', inputWord, '%') OR s.description LIKE CONCAT('%', inputWord, '%') OR 
+            s.neighborhood_overview LIKE CONCAT('%', inputWord, '%') OR s.amenities LIKE CONCAT('%', inputWord, '%')
+        LIMIT offset, no_of_records_per_page;
     ELSE
         SELECT 'No data is found.' AS 'Error Message';
     END IF;
@@ -466,7 +482,7 @@ END;
 
 -- listing search procedure and sort by price
 DROP PROCEDURE IF EXISTS WordListingSearchSortByPrice; //
-CREATE PROCEDURE WordListingSearchSortByPrice(IN inputWord TEXT, IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2))
+CREATE PROCEDURE WordListingSearchSortByPrice(IN inputWord TEXT, IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2), IN offset INT, IN no_of_records_per_page INT)
 
 BEGIN
     IF EXISTS (SELECT listing_id 
@@ -478,8 +494,12 @@ BEGIN
                     AND L.beds = beds 
                     AND L.price > price_low 
                     AND L.price < price_high) THEN
-        SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, s.host_id, s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, s.bathrooms_text
-        FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text
+        SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, s.host_id, 
+            s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, 
+            s.bathrooms_text, L.latitude, L.longitude
+        FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, 
+                L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, 
+                L.review_scores_rating, L.bathrooms_text, L.latitude, L.longitude
                 FROM Listing as L
                 WHERE L.neighbourhood_cleansed = neighborhood 
                 AND L.room_type = room_type 
@@ -488,9 +508,10 @@ BEGIN
                 AND L.beds >= beds 
                 AND L.price >= price_low 
                 AND L.price <= price_high) AS s
-        WHERE s.name LIKE CONCAT('%', inputWord, '%') OR s.description LIKE CONCAT('%', inputWord, '%') OR s.neighborhood_overview LIKE CONCAT('%', inputWord, '%') OR s.amenities LIKE CONCAT('%', inputWord, '%')
+        WHERE s.name LIKE CONCAT('%', inputWord, '%') OR s.description LIKE CONCAT('%', inputWord, '%') OR 
+            s.neighborhood_overview LIKE CONCAT('%', inputWord, '%') OR s.amenities LIKE CONCAT('%', inputWord, '%')
         ORDER BY s.price
-        LIMIT 10;
+        LIMIT offset, no_of_records_per_page;
     ELSE
         SELECT 'No data is found.' AS 'Error Message';
     END IF;
@@ -500,7 +521,9 @@ END;
 
 -- listing search procedure and sort by price
 DROP PROCEDURE IF EXISTS WordListingSearchSortByReview; //
-CREATE PROCEDURE WordListingSearchSortByReview(IN inputWord TEXT, IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2))
+CREATE PROCEDURE WordListingSearchSortByReview(IN inputWord TEXT, IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), 
+    IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2), 
+    IN offset INT, IN no_of_records_per_page INT)
 
 BEGIN
     IF EXISTS (SELECT listing_id 
@@ -512,8 +535,12 @@ BEGIN
                     AND L.beds = beds 
                     AND L.price > price_low 
                     AND L.price < price_high) THEN
-        SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, s.host_id, s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, s.bathrooms_text
-        FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text
+        SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, 
+            s.host_id, s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, 
+            s.bathrooms_text, L.latitude, L.longitude
+        FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, 
+                L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, 
+                L.review_scores_rating, L.bathrooms_text, L.latitude, L.longitude
                 FROM Listing as L
                 WHERE L.neighbourhood_cleansed = neighborhood 
                 AND L.room_type = room_type 
@@ -522,9 +549,10 @@ BEGIN
                 AND L.beds >= beds 
                 AND L.price >= price_low 
                 AND L.price <= price_high) AS s
-        WHERE s.name LIKE CONCAT('%', inputWord, '%') OR s.description LIKE CONCAT('%', inputWord, '%') OR s.neighborhood_overview LIKE CONCAT('%', inputWord, '%') OR s.amenities LIKE CONCAT('%', inputWord, '%')
+        WHERE s.name LIKE CONCAT('%', inputWord, '%') OR s.description LIKE CONCAT('%', inputWord, '%') OR 
+        s.neighborhood_overview LIKE CONCAT('%', inputWord, '%') OR s.amenities LIKE CONCAT('%', inputWord, '%')
         ORDER BY s.number_of_reviews DESC
-        LIMIT 10;
+        LIMIT offset, no_of_records_per_page;
     ELSE
         SELECT 'No data is found.' AS 'Error Message';
     END IF;
@@ -533,7 +561,9 @@ END;
 
 -- listing search procedure and sort by price
 DROP PROCEDURE IF EXISTS WordListingSearchSortByRating; //
-CREATE PROCEDURE WordListingSearchSortByRating(IN inputWord TEXT, IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2))
+CREATE PROCEDURE WordListingSearchSortByRating(IN inputWord TEXT, IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), 
+    IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2), 
+    IN offset INT, IN no_of_records_per_page INT)
 
 BEGIN
     IF EXISTS (SELECT listing_id 
@@ -545,8 +575,12 @@ BEGIN
                     AND L.beds = beds 
                     AND L.price > price_low 
                     AND L.price < price_high) THEN
-        SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, s.host_id, s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, s.bathrooms_text
-        FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text
+        SELECT s.listing_id, s.listing_url, s.name, s.description, s.neighborhood_overview, s.picture_url, 
+            s.host_id, s.property_type, s.amenities, s.price, s.number_of_reviews, s.review_scores_rating, 
+            s.bathrooms_text, L.latitude, L.longitude
+        FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, 
+                L.picture_url, L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, 
+                L.review_scores_rating, L.bathrooms_text, L.latitude, L.longitude
                 FROM Listing as L
                 WHERE L.neighbourhood_cleansed = neighborhood 
                 AND L.room_type = room_type 
@@ -555,9 +589,10 @@ BEGIN
                 AND L.beds >= beds 
                 AND L.price >= price_low 
                 AND L.price <= price_high) AS s
-        WHERE s.name LIKE CONCAT('%', inputWord, '%') OR s.description LIKE CONCAT('%', inputWord, '%') OR s.neighborhood_overview LIKE CONCAT('%', inputWord, '%') OR s.amenities LIKE CONCAT('%', inputWord, '%')
+        WHERE s.name LIKE CONCAT('%', inputWord, '%') OR s.description LIKE CONCAT('%', inputWord, '%') OR 
+        s.neighborhood_overview LIKE CONCAT('%', inputWord, '%') OR s.amenities LIKE CONCAT('%', inputWord, '%')
         ORDER BY s.review_scores_rating DESC
-        LIMIT 10;
+        LIMIT offset, no_of_records_per_page;
     ELSE
         SELECT 'No data is found.' AS 'Error Message';
     END IF;
@@ -694,5 +729,41 @@ BEGIN
     AND z.zipcode = p.zipcode
     AND cumulative_cases != 'NULL'
     ORDER BY new_to_cumulative_ratio ASC, l.average_location_rating DESC, p.park_count DESC;
+END;
+//
+
+DROP PROCEDURE IF EXISTS CountListingSearch;  //
+CREATE PROCEDURE CountListingSearch(IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), IN accommodates INT, 
+    IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2))
+BEGIN
+    SELECT COUNT(*)
+    FROM Listing AS L
+    WHERE L.neighbourhood_cleansed = neighborhood 
+        AND L.room_type = room_type 
+        AND L.accommodates >= accommodates 
+        AND L.bedrooms >= bedrooms 
+        AND L.beds >= beds 
+        AND L.price >= price_low 
+        AND L.price <= price_high;
+END;
+//
+
+DROP PROCEDURE IF EXISTS CountWordSearch;  //
+CREATE PROCEDURE CountWordSearch(IN inputWord TEXT, IN neighborhood VARCHAR(30), IN room_type VARCHAR(20), 
+    IN accommodates INT, IN bedrooms INT, IN beds INT, IN price_low DECIMAL(8,2), IN price_high DECIMAL(8,2))
+BEGIN
+    SELECT COUNT(*)
+    FROM (SELECT L.listing_id, L.listing_url, L.name, L.description, L.neighborhood_overview, L.picture_url, 
+            L.host_id, L.property_type, L.amenities, L.price, L.number_of_reviews, L.review_scores_rating, L.bathrooms_text
+                FROM Listing as L
+                WHERE L.neighbourhood_cleansed = neighborhood 
+                AND L.room_type = room_type 
+                AND L.accommodates >= accommodates 
+                AND L.bedrooms >= bedrooms 
+                AND L.beds >= beds 
+                AND L.price >= price_low 
+                AND L.price <= price_high) AS s
+    WHERE s.name LIKE CONCAT('%', inputWord, '%') OR s.description LIKE CONCAT('%', inputWord, '%') 
+        OR s.neighborhood_overview LIKE CONCAT('%', inputWord, '%') OR s.amenities LIKE CONCAT('%', inputWord, '%');
 END;
 //

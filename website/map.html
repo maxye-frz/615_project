@@ -1,6 +1,40 @@
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDctDsXqy2UL3TKLIdHNpUYVAKMpJsvWqw&callback=initMap&libraries=&v=weekly"
         defer ></script>
+
+
+<script type="text/javascript">
+    function initMap(){
+        var mapOptions = { 
+            zoom:12,  
+            center: {lat: 37.7749, lng: -122.4194} 
+        }
+        map = new google.maps.Map(document.getElementById("map"), mapOptions);
+        <?php foreach($locations as $location){ ?>
+            var location = new google.maps.LatLng(<?php echo $location['lat']; ?>, <?php echo $location['long']; ?> );
+            var infoWindow = new google.maps.InfoWindow();
+            var name = "<?php echo $location['name']; ?>";
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: name
+            });
+            
+            marker.addListener("click", toggleBounce);
+            console.log(marker);
+            function toggleBounce() {
+              if (marker.getAnimation() !== null) {
+                marker.setAnimation(null);
+              } else {
+                marker.setAnimation(google.maps.Animation.BOUNCE);
+              }
+
+              infoWindow.setContent(name);
+              infoWindow.open(map, marker);
+            }
+        <?php } ?>
+    }
+</script>
 <section class="map1 cid-sj2482wzwW" id="map1-y">
         <div class="container ">
             <div class="mbr-section-head mb-4">

@@ -20,6 +20,7 @@ if (isset($_GET['listingid'])) {
 $listing_stmt = "CALL FindListingByID('$listing_id')";
 $review_stmt = "CALL FindReviewByListingID('$listing_id')";
 $host_id = 1169;
+$locations = [];
 
 // Call the select statement
 if ($mysqli->multi_query($listing_stmt)) {
@@ -39,6 +40,13 @@ if ($mysqli->multi_query($listing_stmt)) {
         $number_of_reviews = $row[9]; 
         $review_scores_rating = $row[10]; 
         $bathrooms_text = $row[11];
+        $listing_lat = $row[12];
+        $listing_long = $row[13];
+        $location = [];
+        $location['lat'] = $listing_lat;
+        $location['long'] = $listing_long;
+        $location['name'] = $listing_name;
+        $locations[] = $location;
         echo "<section class=\"gallery5 mbr-gallery cid-sj24Fs6IYs\" id=\"gallery5-10\">
                 <div class=\"container\">
                     <div class=\"mbr-section-head\">

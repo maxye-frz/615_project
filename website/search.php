@@ -5,52 +5,29 @@ include 'php/open.php';
 // Load html 
 include('header.html');
 include('listings.html');
+// Retrieve parameters
+include('php/retrieve_param.php');
+include('php/prepare_search_stmt.php');
 
 // Configure error reporting settings
 ini_set('error_reporting', E_ALL); // report errors of all types
 ini_set('display_errors', true);   // report errors to screen (don't hide from user)
 
-# get search items
-$neighborhood = $_POST['neighborhood'];
-$room = $_POST['room'];
-$accomodation = $_POST['accomodation'];
-$bedroom = $_POST['bedroom'];
-$bed = $_POST['bed'];
-$price = $_POST['price'];
-$search = $_POST['search'];
+// Get total page number 
+$page_result = $mysqli->query($total_pages_sql);
+$total_rows = $page_result->fetch_row()[0];
+$total_pages = ceil($total_rows / $no_of_records_per_page);
+$mysqli->next_result();
 
-# regularize price
-$price_low = 100;
-$price_high = 200;
+$locations = [];
 
-if ($price == '$0 ~ 100') {
-    $price_low = 0;
-    $price_high = 100;
-} else {
-    $price_low = substr($price, 1, 3);
-    $price_high = substr($price, 7, 3);
-}
-
-$covid_stmt = "CALL NeighborhoodInfo('$neighborhood')";
-<<<<<<< HEAD
-$stmt = "CALL ListingSearch('$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
-=======
-
-if (!isset($search) || empty($search)) {
-    $stmt = "CALL ListingSearch('$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
-} else {
-    $stmt = "CALL WordListingSearch('$search', '$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
-}
-
->>>>>>> d42ca76f304240ac4ba3766ecef3047c75e1bc1d
-
-// covid part
+// Display neighborhood information
 if ($mysqli->multi_query($covid_stmt)) {
     if ($covid_result = $mysqli->store_result()) {
         $row = $covid_result->fetch_row();
-
         $resident_population = $row[2];
         $covid_case = $row[3];
+        $park_score = $row[7];
         echo "<div class=\"container\">
                 <div class=\"row justify-content-center\">
                     <div class=\"col-lg-8\">
@@ -65,6 +42,9 @@ if ($mysqli->multi_query($covid_stmt)) {
                                 <div class=\"col\">
                                     <h6><strong>Resident Population  </strong></h6> <h2 style=\"color:#3399ff\">$resident_population</h2>
                                 </div>
+                                <div class=\"col\">
+                                    <h6><strong>Park Score  </strong></h6> <h2 style=\"color:#3399ff\">$park_score</h2>
+                                </div>
                             </div>
                         </div>
                         <p class=\"mbr-text mb-5 align-center mbr-fonts-style display-7\"></p>
@@ -78,23 +58,23 @@ if ($mysqli->multi_query($covid_stmt)) {
 }
 
 
-// listing item part
+// Display listing items
 if ($mysqli->multi_query($stmt)) {
     echo "<section class=\"team2 cid-sj23QabDy9\" xmlns=\"http://www.w3.org/1999/html\" id=\"team2-x\">";
     
     echo "<div class=\"container\">
-        <form action=\"sort.php\" method=\"POST\" class=\"justify-content-center\">
+        <form action=\"search.php\" method=\"POST\" class=\"justify-content-center\">
             <div class=\"row justify-content-center\">
                 <label class=\"radio-container\">Price&nbsp&nbsp
-                    <input type=\"radio\" value=\"price\" name=\"sort\">
+                    <input type=\"radio\" value=\"price\" name=\"sortby\">
                     <span class=\"checkmark\"></span>
                 </label>
                 <label class=\"radio-container\">Review Number&nbsp&nbsp
-                    <input type=\"radio\"  value=\"review\" name=\"sort\">
+                    <input type=\"radio\"  value=\"review\" name=\"sortby\">
                     <span class=\"checkmark\"></span>
                 </label>
                 <label class=\"radio-container\">Rating&nbsp&nbsp
-                    <input type=\"radio\"  value=\"rating\" name=\"sort\">
+                    <input type=\"radio\"  value=\"rating\" name=\"sortby\">
                     <span class=\"checkmark\"></span>
                 </label>
             </div>
@@ -129,11 +109,17 @@ if ($mysqli->multi_query($stmt)) {
                     $host_id = $row[6];
                     $property_type = $row[7];
                     $amenities = $row[8];
-                    $price = $row[9];
+                    $listing_price = $row[9];
                     $review_num = $row[10];
                     $review_scores_rating = $row[11];
                     $bath = $row[12];
-
+                    $listing_lat = $row[13];
+                    $listing_long = $row[14];
+                    $location = [];
+                    $location['lat'] = $listing_lat;
+                    $location['long'] = $listing_long;
+                    $location['name'] = $listing_name;
+                    $locations[] = $location;
                     
                     echo "<div class=\"container\"  >
                               <div class=\"card\">
@@ -165,7 +151,7 @@ if ($mysqli->multi_query($stmt)) {
                                                     <div class=\"card float-right col \">
                                                         <div class=\"row \">
                                                             <h5 class=\"mbr-fonts-style mb-0 display-5\">
-                                                                <strong>$".$price. "</strong>
+                                                                <strong>$".$listing_price. "</strong>
                                                             </h5>/night
                                                         </div>
                                                         <div class=\"row mbr-section-btn\">
@@ -189,6 +175,8 @@ if ($mysqli->multi_query($stmt)) {
 } else { // we've called a stored procedure that does not exist, or that database connection is broken
         printf("<br>Error: %s\n", $mysqli->error);
 }
+
+include('pagination.html');
 include('map.html');
 echo "</section>";
 include('footer.html');

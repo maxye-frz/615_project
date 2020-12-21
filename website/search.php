@@ -32,7 +32,17 @@ if ($price == '$0 ~ 100') {
 }
 
 $covid_stmt = "CALL NeighborhoodInfo('$neighborhood')";
+<<<<<<< HEAD
 $stmt = "CALL ListingSearch('$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
+=======
+
+if (!isset($search) || empty($search)) {
+    $stmt = "CALL ListingSearch('$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
+} else {
+    $stmt = "CALL WordListingSearch('$search', '$neighborhood', '$room', '$accomodation', '$bedroom', '$bed', '$price_low', '$price_high')";
+}
+
+>>>>>>> d42ca76f304240ac4ba3766ecef3047c75e1bc1d
 
 // covid part
 if ($mysqli->multi_query($covid_stmt)) {

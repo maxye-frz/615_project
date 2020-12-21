@@ -8,7 +8,10 @@ DROP DATABASE IF EXISTS final_project;
 
 CREATE DATABASE final_project;
 
-USE final_project; 
+USE final_project;
+
+-- set MySQL server not in strict mode, so that table can be inserted with NULL for int type fields
+SET @@global.sql_mode= '';
 
 -- drop and create tables:
 DROP TABLE IF EXISTS Admin;
@@ -50,7 +53,8 @@ CREATE TABLE Host(
     host_verifications TEXT NOT NULL, 
     host_has_profile_pic VARCHAR(1) NOT NULL, 
     host_identity_verified VARCHAR(2) NOT NULL,
-    PRIMARY KEY (host_id)
+    PRIMARY KEY (host_id),
+    UNIQUE (host_id)
 );
 
 
